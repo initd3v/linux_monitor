@@ -1,0 +1,193 @@
+.TH man 1 "10 March 2023" "1.0" "monitor.sh man page"
+.SH NAME
+
+monitor.sh \- basic bash script for Linux monitoring essential parameters
+
+.SH SYNOPSIS
+
+monitor.sh [--check | check | -check] [--help | help | -h] [--version | version | -v]
+
+.SH DEPENDENCIES
+
+.B The necessary dependencies are as follows:
+.PP
+    DEPENDENCY      VERSION         COMMANDS
+.PP
+    bc              >= 1.07.1
+.PP
+    GNU bash        >= 5.1.4(1)
+.PP
+    GNU Awk         >= 5.1.0
+.PP
+    GNU Coreutils   >= 8.32c        cat | date | echo| df | head | id | mkdir | tail | wc
+.PP
+    grep            >= 3.6
+.PP
+    iputils         >= 20210202     ping
+.PP
+    procps-ng       >= 3.3.17       ps | free
+.PP
+    sed             >= 4.7 
+.PP
+    util-linux      >= 2.36.1       dmesg | lsblk
+.PP
+    whereis         >= 2.36.1
+
+.B The optional dependencies are as follows:
+.PP
+    GNU Mailutils   >= 3.10         mail
+.PP
+    openrc          >= 0.46         rc-status
+.PP
+    systemd         >= 247          systemctl
+.PP
+    sysvinit        >= 3.06         service
+      
+.SH DESCRIPTION
+
+The script 'monitor.sh' is used for monitoring essential parameters as an unprivileged user on a Linux system and pass a return value. This value can be evaluated by a monitoring software which calls the script by SSH access. Additionally it can send an email itself if the command dependencies are installed and configured.
+.PP
+To run the script you need to configure a configuration file in the same path where the script is located. Further information can be obtained from the 'CONFIGURATION' part.
+.PP
+.B Supported monitoring values:
+.PP
+    - filesystem check 
+.PP
+        -> left filesystem space    (defined on an individual upper limit - default: 80 percent usage)
+.PP
+        -> left inode space         (defined on an individual upper limit - default: 80 percent usage)
+.PP
+        -> btrfs missing device
+.PP
+        -> ext4 error count
+.PP
+    - block device check
+.PP
+        -> optional: check defined block devices by 'MAJ:MIN' for existence
+.PP
+    - raid check
+.PP
+        -> MD raid missing device
+.PP
+    ⁻ process check
+.PP
+        -> processes which lasts longer than 30 minutes in CPU and indicate a zombie or disk sleep state
+.PP
+        -> optional: check defined processes of a user for existence
+.PP
+    - service check
+.PP
+        -> check failed services on identified init system 'openrc' or 'systemd' or 'sysvinit'
+.PP
+    - dmesg check
+.PP
+        -> check for 'err', 'emerg' or 'crit' messages in the kernel log if user has read permission
+.PP
+    - network check
+.PP       
+        -> optional: check defined IP addresses or DNS names for ICMP status
+.PP
+    - memory check
+.PP
+        -> check if memory usage is higher than 95 percent
+.PP
+        -> check if swap usage is higher than 50 percent
+.PP
+.PP
+.B The options are as follows (only 1 option can be provided):
+.PP
+        --check     | check     | -c        check the system and return
+.PP        
+        --help      | help      | -h        output the help instructions
+.PP
+        --version   | version   | -v        output version
+        
+.SH CONFIGURATION
+The configuration file needs to be placed / linked in the same folder as the main script and has to be named 'monitor.conf'.
+.PP
+.B The necessary variables are as follows:
+.PP
+    SCRIPT_BASE_PATH="[STRING]"
+.PP
+        -> defines the local base path where the log file will be written to
+.PP
+        -> e.g. SCRIPT_BASE_PATH="/tmp"
+.PP
+.B The optional variables are as follows:
+.PP
+    VERBOYITY_LEVEL=[INTEGER]
+.PP
+        -> defines the verbosity level
+.PP
+            INTEGER     VERBOSITY                               SCENARIO
+.PP   
+            0           no log                                  -
+.PP
+            1           log error                               -
+.PP
+            2           stdout error                            monitoring (e.g. integrating into monitoring software by SSH access)
+.PP
+            3           log & stdout error                      monitoring (e.g. integrating into monitoring software by SSH access)
+.PP
+            4           log warnings + error                    debugging
+.PP
+            5           stdout warning + error                  debugging
+.PP
+            6           log & stdout warning + error            debugging
+.PP
+            7           log warning + error + info              debugging
+.PP
+            8           stdout warning + error + info           debugging
+.PP
+            9           log & stdout warning + error + info     debugging
+.PP
+        -> e.g  VERBOYITY_LEVEL=3
+.PP
+    CHECK_FS_LIMIT="[INTEGER]"
+.PP
+        -> defines the alarm limit for filesystem / inode usage in percent
+.PP
+        -> if not set it defaults to '80'
+.PP
+        -> e.g. CHECK_FS_LIMIT=90
+.PP
+    CHECK_DISK_AVAIL="[STRING]"
+.PP
+        -> defines block device as 'MAJ:MIN' which must be available divided by an empty space
+.PP
+        -> e.g. CHECK_DISK_AVAIL="8:0 8:16"
+.PP
+    CHECK_NET_AVAIL="[STRING]"
+.PP
+        -> defines network addresses as IP or DNS name which must be available divided by an empty space 
+.PP
+        -> e.g. CHECK_NET_AVAIL="9.9.9.9 google.de"
+.PP
+    CHECK_PS
+.PP
+        CHECK_PS="[STRING_1]:::[STRING_1]:::[STRING_2]:::[STRING_2]"
+.PP
+        or
+.PP
+        first entry      : CHECK_PS="[STRING_1]:::[STRING_1]"
+.PP
+        additional entry : CHECK_PS+=":::[STRING_2]:::[STRING_2]"
+.PP        
+        -> defines processes which must be available divided by ":::"
+.PP
+        -> e.g.
+.PP
+            CHECK_PS="root:::/sbin/init:::mainuser:::/bin/bash"
+.PP
+            or
+.PP
+            CHECK_PS="root:::/sbin/init"
+.PP
+            CHECK_PS+=":::mainuser:::/bin/bash
+.SH BUGS
+
+Please report any bugs at: 
+
+.SH AUTHOR
+
+Martin Manegold
