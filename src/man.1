@@ -1,4 +1,4 @@
-.TH man 1 "10 March 2023" "1.0" "monitor.sh man page"
+.TH man 1 "23 November 2023" "1.1" "monitor.sh man page"
 .SH NAME
 
 monitor.sh \- basic bash script for Linux monitoring essential parameters
@@ -63,7 +63,7 @@ To run the script you need to configure a configuration file in the same path wh
 .PP
     - block device check
 .PP
-        -> optional: check defined block devices by 'MAJ:MIN' for existence
+        -> optional: check defined block devices by 'MAJ:MIN' or block device name for existence
 .PP
     - raid check
 .PP
@@ -91,7 +91,7 @@ To run the script you need to configure a configuration file in the same path wh
 .PP
         -> check if memory usage is higher than 95 percent
 .PP
-        -> check if swap usage is higher than 50 percent
+        -> optional: check if swap usage is higher than 50 percent
 .PP
 .PP
 .B The options are as follows (only 1 option can be provided):
@@ -115,34 +115,6 @@ The configuration file needs to be placed / linked in the same folder as the mai
 .PP
 .B The optional variables are as follows:
 .PP
-    VERBOYITY_LEVEL=[INTEGER]
-.PP
-        -> defines the verbosity level
-.PP
-            INTEGER     VERBOSITY                               SCENARIO
-.PP   
-            0           no log                                  -
-.PP
-            1           log error                               -
-.PP
-            2           stdout error                            monitoring (e.g. integrating into monitoring software by SSH access)
-.PP
-            3           log & stdout error                      monitoring (e.g. integrating into monitoring software by SSH access)
-.PP
-            4           log warnings + error                    debugging
-.PP
-            5           stdout warning + error                  debugging
-.PP
-            6           log & stdout warning + error            debugging
-.PP
-            7           log warning + error + info              debugging
-.PP
-            8           stdout warning + error + info           debugging
-.PP
-            9           log & stdout warning + error + info     debugging
-.PP
-        -> e.g  VERBOYITY_LEVEL=3
-.PP
     CHECK_FS_LIMIT="[INTEGER]"
 .PP
         -> defines the alarm limit for filesystem / inode usage in percent
@@ -155,7 +127,13 @@ The configuration file needs to be placed / linked in the same folder as the mai
 .PP
         -> defines block device as 'MAJ:MIN' which must be available divided by an empty space
 .PP
-        -> e.g. CHECK_DISK_AVAIL="8:0 8:16"
+        -> e.g. CHECK_DISK_AVAIL="8:0 8:16 /dev/sda"
+.PP
+    CHECK_SWAP="[INTEGER]"
+.PP
+        -> if set to '1' the check will be enabled and checks for a higher usage than 50 percent
+.PP
+        -> e.g. CHECK_SWAP=1
 .PP
     CHECK_NET_AVAIL="[STRING]"
 .PP

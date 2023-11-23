@@ -22,7 +22,6 @@ The Project is written as a GNU bash shell script.
 | grep          | >= 3.6                                | necessary     | grep                                                         |
 | iputils       | >= 20210202                           | necessary     | ping                                                         |
 | procps-ng     | >= 3.3.17                             | necessary     | ps & free                                                    |
-| sed           | >= 4.7                                | necessary     | sed                                                          |
 | util-linux    | >= 2.36.1                             | necessary     | dmesg & lsblk                                                |
 | whereis       | >= 2.36.1                             | necessary     | whereis                                                      |
 | GNU Mailutils | >= 3.10                               | optional      | mail                                                         |
@@ -80,28 +79,13 @@ The folowing configuration options are valid.
 | Variable                      | Description                                                                                       | Example                                                   |Necessity  | Supported value(s)    | Default |
 |:------------------------------|:--------------------------------------------------------------------------------------------------|:----------------------------------------------------------|:---------:|:---------------------:|:-------:|
 | SCRIPT_BASE_PATH              | defines the local base path where the log file will be written to                                 | SCRIPT_BASE_PATH="/tmp"                                   | necessary | STRING                | -       |
-| VERBOYITY_LEVEL¹              | defines the verbosity level                                                                       | VERBOYITY_LEVEL=3                                         | optional  | 0 <= INTEGER <= 9     | 3       |
 | CHECK_FS_LIMIT                | defines the alarm limit for filesystem / inode usage in percent                                   | CHECK_FS_LIMIT=90                                         | optional  | 0 <= INTEGER <= 100   | 80      |
-| CHECK_DISK_AVAIL              | defines block device as 'MAJ:MIN' which must be available divided by an empty space               | CHECK_DISK_AVAIL="8:0 8:16"                               | optional  | STRING                | -       |
+| CHECK_DISK_AVAIL              | defines block device as 'MAJ:MIN' which must be available divided by an empty space               | CHECK_DISK_AVAIL="8:0 8:16 /dev/sda"                      | optional  | STRING                | -       |
+| CHECK_SWAP                    | enable SWAP space check for usage above 50 percent                                                | CHECK_SWAP=1                                              | optional  | 1                     | -       |
 | CHECK_NET_AVAIL               | defines network addresses as IP or DNS name which must be available divided by an empty space     | CHECK_NET_AVAIL="9.9.9.9 google.de"                       | optional  | STRING                | -       |
-| CHECK_PS²                     | defines processes which must be available divided by ":::"                                        | CHECK_PS="root:::/sbin/init:::mainuser:::/bin/bash"       | optional  | STRING                | -       |
+| CHECK_PS¹                     | defines processes which must be available divided by ":::"                                        | CHECK_PS="root:::/sbin/init:::mainuser:::/bin/bash"       | optional  | STRING                | -       |
 
-**¹ Value Description vaiable 'VERBOYITY_LEVEL'**
-
-| INTEGER   | VERBOSITY                             | SCENARIO                                                              |
-|:----------|:--------------------------------------|:----------------------------------------------------------------------|
-| 0         | no log                                | -                                                                     |
-| 1         | log error                             | monitoring (e.g. integrating into monitoring software by SSH access)  |
-| 2         | stdout error                          | monitoring (e.g. integrating into monitoring software by SSH access)  |
-| 3         | log & stdout error                    | debugging                                                             |
-| 4         | log warnings + error                  | debugging                                                             |
-| 5         | stdout warning + error                | debugging                                                             |
-| 6         | log & stdout warning + error          | debugging                                                             |
-| 7         | log warning + error + info            | debugging                                                             |
-| 8         | stdout warning + error + info         | debugging                                                             |
-| 9         | log & stdout warning + error + info   | debugging                                                             |
-
-**² Value Description vaiable 'CHECK_PS'**
+**¹ Value Description vaiable 'CHECK_PS'**
 
 * entry            : CHECK_PS="[STRING_1]:::[STRING_1]:::[STRING_2]:::[STRING_2]"
 
