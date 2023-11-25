@@ -4,7 +4,7 @@
 # Description: Server Check
 
 function f_quit() {
-    if [ ${SCRIPT_ERRORLOCK} -eq 0 ] ; then
+    if [ "${SCRIPT_ERRORLOCK}x" == "0x" ] ; then
         /usr/bin/rmdir "${SCRIPT_LOCK}" > /dev/null 2>&1
     fi
 
