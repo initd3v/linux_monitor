@@ -221,7 +221,7 @@ function f_check_raid() {
 }
 
 function f_check_process() {
-    V_CHECK_PROCESS=$( ${CMD_PS} -eo pid,user,stat,times,cmd | ${CMD_AWK} '{ if(($3~"D" || $3~"Z") && $4 > 1800) print $1,$2,$5 }' )
+    V_CHECK_PROCESS=$( ${CMD_PS} -eo pid,user,stat,cmd,time | ${CMD_AWK} '{ split($5,a,/:/); print $1,$2,$3,$4,a[3]*60+a[2]*3600+a[1]*86400 }' | ${CMD_AWK} '{ if(($3~"D" || $3~"Z") && $5 > 1800) print $1,$2,$4 }' )
     if [ "${V_CHECK_PROCESS}x" != "x" ] ; then
         while IFS= read -r V_LINE ; do
             CHECK_ERROR+="[${TMP_OUTPUT_CROSS}] [$( ${CMD_DATE} +"%d%m%Y_%H%M%S" )] [The process with the ID '$( ${CMD_AWK} '{ print $1 }' <<< ${V_LINE} )' from user '$( ${CMD_AWK} '{ print $2 }' <<< ${V_LINE} )' and comamnd '$( ${CMD_AWK} '{ print $3 }' <<< ${V_LINE} )' is running more than 30 minutes and indicates an disk sleep or zombie state.]\n"
@@ -239,7 +239,7 @@ function f_check_process() {
                 V_CHECK_PROCESS_CMD=$( ${CMD_AWK} -v var=${V_CHECK_PROCESS_COUNTER} -F ":::" '{print $(var+1)}' <<< "${CHECK_PS}" )
                 V_CHECK_PROCESS=$( ${CMD_ID} -u "${V_CHECK_PROCESS_USER}" >/dev/null 2>&1 )
                 if [ $? -eq ${TMP_TRUE} ] ; then
-                    V_CHECK_PROCESS=$( ${CMD_PS} -U "${V_CHECK_PROCESS_USER}" -o pid,user,stat,times,cmd | ${CMD_GREP} -i "${V_CHECK_PROCESS_CMD}" | ${CMD_GREP} -v grep )
+                    V_CHECK_PROCESS=$( ${CMD_PS} -U "${V_CHECK_PROCESS_USER}" -o pid,user,stat,cmd,time | ${CMD_GREP} -i "${V_CHECK_PROCESS_CMD}" | ${CMD_GREP} -v grep )
                     if [ "${V_CHECK_PROCESS}x" == "x" ] ; then
                        CHECK_ERROR+="[${TMP_OUTPUT_CROSS}] [$( ${CMD_DATE} +"%d%m%Y_%H%M%S" )] [The process '${V_CHECK_PROCESS_CMD}' of user '${V_CHECK_PROCESS_USER}' is not running.]\n"
                     fi
