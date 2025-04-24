@@ -221,10 +221,10 @@ function f_check_raid() {
 }
 
 function f_check_process() {
-    V_CHECK_PROCESS=$( ${CMD_PS} -eo pid,user,stat,cmd,time | ${CMD_AWK} '{ split($5,a,/:/); print $1,$2,$3,$4,a[3]*60+a[2]*3600+a[1]*86400 }' | ${CMD_AWK} '{ if(($3~"D" || $3~"Z") && $5 > 1800) print $1,$2,$4 }' )
+    V_CHECK_PROCESS=$( ${CMD_PS} -eo pid,user,stat,cmd,time | ${CMD_AWK} '{ split($5,a,/:/); print $1,$2,$3,$4,a[3]*60+a[2]*3600+a[1]*86400 }' | ${CMD_AWK} '{ if(($3~"D" || $3~"Z") && $5 > 18000) print $1,$2,$4 }' )
     if [ "${V_CHECK_PROCESS}x" != "x" ] ; then
         while IFS= read -r V_LINE ; do
-            CHECK_ERROR+="[${TMP_OUTPUT_CROSS}] [$( ${CMD_DATE} +"%d%m%Y_%H%M%S" )] [The process with the ID '$( ${CMD_AWK} '{ print $1 }' <<< ${V_LINE} )' from user '$( ${CMD_AWK} '{ print $2 }' <<< ${V_LINE} )' and comamnd '$( ${CMD_AWK} '{ print $3 }' <<< ${V_LINE} )' is running more than 30 minutes and indicates an disk sleep or zombie state.]\n"
+            CHECK_ERROR+="[${TMP_OUTPUT_CROSS}] [$( ${CMD_DATE} +"%d%m%Y_%H%M%S" )] [The process with the ID '$( ${CMD_AWK} '{ print $1 }' <<< ${V_LINE} )' from user '$( ${CMD_AWK} '{ print $2 }' <<< ${V_LINE} )' and comamnd '$( ${CMD_AWK} '{ print $3 }' <<< ${V_LINE} )' is running more than 5 hours and indicates an disk sleep or zombie state.]\n"
         done <<< "${V_CHECK_PROCESS}"
     fi
 
